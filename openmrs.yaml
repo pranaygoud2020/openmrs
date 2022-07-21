@@ -1,0 +1,39 @@
+apiVersion: app/v1
+kind: Deployment
+metadata:
+  name: openmrs
+  labels:
+    app: openmrs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: openmrs
+  template:
+    metadata:
+      labels:
+        app: openmrs
+    spec:
+      containers:
+      - image: openmrs/openmrs-reference-application-distro:2.6
+        name: openmrs
+        env:
+        - name: DB_HOST
+          value: mysql
+        - name: DB_DATABASE
+          value: openmrs
+        - name: DB_USERNAME
+          value: openmrs
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: password
+        - name: DB_CREATE_TABLES
+          value: "true"
+        - name: DB_AUTO_UPDATE
+          value: "true"
+        ports:
+        - containerPort: 8080
+          name: openmrs
+        
